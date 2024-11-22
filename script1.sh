@@ -1,15 +1,19 @@
 #!/bin/bash
 
-host_name=$1
-ip_address=$2
-dns_server=$3
+cat /etc/hosts | while read  ip dom
+do
+	if [ "$ip" = "#"]; then 
+		break
+	fi
+	if [[ "$dom" = "localhost" || "$dom" = "'hostname'" ]]; then
+		continue
+	fi
 
-ip_correct=$(dig +short "$host_name"  @"$dns_server" | tail -n 1)
+	ipCorect= 'dig +short "$dom" @"8.8.8.8" | tail -n 1'
 
-if  [[ "$ip_address" == "$ip_correct" ]]; then
-	echo "OK"
-else
-	echo "NU"
-fi
+	if [[ "$ip" != "$ipCorect" ]]; then
+		echo "Bogus IP for $dom in /etc/hosts"
+	fi
+done
 
 exit 0
